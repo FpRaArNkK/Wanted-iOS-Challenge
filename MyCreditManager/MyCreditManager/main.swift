@@ -1,23 +1,32 @@
-/*
- 학생추가
- 학생삭제
- 성적추가(변경)
- 성적삭제
- 평점보기
- 종료
- */
 import Foundation
 
+///runtime 중 발생가능한 Error 종류들
+///
+/// 1. BadInput - 입력 값이 잘못되었을 때 발생
+/// 2. AlreadyExist - 해당 값이 이미 리스트에 존재하여 생성할 수 없을 때 발생
+/// 3. NoneExist - 해당 값이 리스트에 존재하지 않아 참조할 수 없을 때 발생
 enum TestError : Error {
+    
     case BadInput
     case AlreadyExist(name: String)
     case NoneExist(name: String)
 }
 
+
+/// Student 인스턴스 목록
+///
+///   property & methods
+/// - var list >  Student Instance Array
+/// - func list_search(name:String) throws -> Student?
+/// - func assign_student(name:String) throws -> Student
+/// - func delete_student(name:String) throws -> String
 class students_list {
+    ///Student 인스턴스들을 저장하는 Array
     var list: Array<Student> = []
     
-    ///student_list에 해당 name이 존재하는지 확인, 있다면 해당 instance 반환
+    ///목록에 이름이 있는지 확인하는 함수
+    ///
+    ///student list에 해당 name이 존재하는지 확인, 있다면 해당 instance 반환
     func list_search(name:String) throws -> Student? {
         if name == "" { throw TestError.BadInput }
         
@@ -29,26 +38,30 @@ class students_list {
         return nil
     }
     
-    ///student list에 접근하여 name이 vaild한지 확인, instance를 만들어 student list에저장 후 반환
+    ///목록에 해당 name의 Student를 추가하는 함수
+    ///
+    ///student list에 접근하여 name이 vaild한지 확인, instance를 만들어 student list에 저장 후  instance 반환
     func assign_student(name:String) throws -> Student {
         do {
             if let isExist = try list_search(name: name) {
-                throw TestError.AlreadyExist(name:isExist.name) //if it so, throw Error AlreadyExist
+                throw TestError.AlreadyExist(name:isExist.name)
             } else {
-                let new_student = Student(name: name) // name is valid. make a new instance.
-                list.append(new_student)    //append instance to student list
-                return list.last!   //return prescribed instance + instance의 존재가 확실하기 때문에 !를 써주었는데...확실치 않다.
+                let new_student = Student(name: name)
+                list.append(new_student)
+                return list.last!
             }
         } catch TestError.BadInput{
             throw TestError.BadInput
         }
     }
-    
+    ///목록에 해당 name의 Student를 삭제하는 함수
+    ///
+    ///student list에 접근하여 해당 name이 list에 존재하는지 확인, 해당 name을 가진 instance를 list에서 제거 후 name:String을 반환
     func delete_student(name:String) throws -> String {
         do {
             if let isExist = try list_search(name: name) {
                 let target_index = list.indices.filter { list[$0].name == isExist.name }
-                list.remove(at: target_index.first!) //remove target student in list - instance의 존재가 확실하기 때문에 !를 써주었는데...확실치 않다.
+                list.remove(at: target_index.first!)
                 return name
             } else {
                 throw TestError.NoneExist(name: name)
@@ -60,7 +73,14 @@ class students_list {
     
 }
 
-struct Student {
+/// Student 구조체
+///
+///   property & methods
+/// - var name >  Student Instance Array
+/// - var score > Student's Subject : Score Dictionary
+/// - mutating func add_score(subject:String, input_score:String)
+/// - mutating func delete_score(subject:String)
+class Student {
     var name: String
     var score: Dictionary<String, String>? = [:]
     
@@ -68,16 +88,19 @@ struct Student {
         self.name = name
         self.score = [:]
     }
-    
-    
-    mutating func add_score(subject:String, input_score:String) {
+    /// 입력받은 과목과 점수를 딕셔너리에 추가하는 함수
+    ///
+    /// Student.score를 참조하여 해당 subject와 input_score를 score Dictionary에 저장
+    func add_score(subject:String, input_score:String) {
         if var score_Dic = self.score {
             score_Dic.updateValue(input_score, forKey: subject)
             self.score = score_Dic
         }
     }
-    
-    mutating func delete_score(subject:String) {
+    /// 입력받은 과목을 딕셔너리에서 제거하는 함수
+    ///
+    /// Student.score를 참조하여 해당 subject를 score Dictionary에서 제거
+    func delete_score(subject:String) {
         if var score_Dic = self.score {
             score_Dic.removeValue(forKey: subject)
             self.score = score_Dic
@@ -86,15 +109,23 @@ struct Student {
 }
 
 
-
 var flag:Bool = true
 var Student_list: students_list = students_list()
-
-
 while flag == true {
     flag = menu()
 }
 
+
+///메인 메뉴
+///
+///input에 따른 case의 함수 실행
+///1. add_student() > 학생 추가
+///2. delete_student() > 학생 삭제
+///3. add_score() > 성적 추가(변경)
+///4. delete_score() > 성적 삭제
+///5. show_GPA()  > 평점 보기
+///
+///> menu()는 while문 안에서 돌면서 매번 Bool 값을 return > 이때 false 반환하는 경우 종료
 func menu() -> Bool{
     var return_val:Bool = true
     print("원하는 기능을 입력해주세요")
@@ -124,6 +155,9 @@ func menu() -> Bool{
     return return_val
 }
 
+///학생을 추가하는 함수
+///
+///입력받은 student_name을 student_list.assign_student() 함수로 try-catch
 func add_student() {
     print("추가할 학생의 이름을 입력해주세요")
     if let student_name = readLine(){
@@ -143,11 +177,15 @@ func add_student() {
     }
 }
 
+///학생을 삭제하는 함수
+///
+///입력받은 student_name을 student_list.delete_student()함수로 try-catch
 func delete_student() {
     print("삭제할 학생의 이름을 입력해주세요")
     if let student_name = readLine() {
         do{
-            let _ = try Student_list.delete_student(name: student_name)
+            let student = try Student_list.delete_student(name: student_name)
+            print("\(student) 학생을 삭제했습니다.")
         } catch TestError.BadInput {
             print("입력이 잘못되었습니다. 다시 확인해주세요.")
             return
@@ -162,6 +200,9 @@ func delete_student() {
     
 }
 
+///입력받은 문자열을 체크하는 함수
+///
+///입력받은 문자열과 item 개수로 split된 item들의 개수가 맞는지 확인, Array로 반환
 func inspect_inputLine(input_Line:String, items_num:Int) throws -> Array<String>{
     let input_arr = input_Line.split(separator: " ").map{String($0)}
     if input_arr.count != items_num{
@@ -170,6 +211,11 @@ func inspect_inputLine(input_Line:String, items_num:Int) throws -> Array<String>
     return input_arr
 }
 
+///성적을 추가하는 함수
+///
+///입력받은 문자열을 inspect_inputLine()함수로 try-catch, 반환받은 값으로 student instance를 만들고
+///guard-var로 student_list.list_search()함수를 try-catch.
+///모두 통과하면 해당 instance의 .add_score()호출, student_list.list에 접근하여 해당 instance를 저장
 func add_score() {
     print("성적을 추가할 학생의 이름, 과목 이름, 성적(A+, A, F 등)을 띄어쓰기로 구분하여 차례로 작성해주세요.")
     print("입력예) Mickey Swift A+")
@@ -186,15 +232,8 @@ func add_score() {
             }
             student.add_score(subject: subject, input_score: score)
             
-            let target_in = Student_list.list.indices.filter { Student_list.list[$0].name == student.name }
-            Student_list.list[target_in.first!] = student
-            
             print("\(name) 학생의 \(subject) 과목이 \(score)로 추가(변경)되었습니다.")
             
-            /*존나 곤욕이었던거 정리
-             if var || guard var 뭐든 간에 do 블록 안의 내용은 지역변수이기 때문에 선언해준 student변수는 add_score() 끝나면 사라진다.
-             따라서 Student_list.list에 직접 관여해서 바꿔줘야해
-             이게 깊은복사-얕은복사 차이인 것 같은데 struct와 class의 차이에 대해 유심히 알아봐야겠네..*/
             
         } catch TestError.BadInput {
             print("입력이 잘못되었습니다. 다시 확인해주세요.")
@@ -211,6 +250,11 @@ func add_score() {
     }
 }
 
+///성적을 삭제하는 함수
+///
+///입력받은 문자열을 inspect_inputLine()함수로 try-catch, 반환받은 값으로 student instance를 만들고
+///guard-var로 student_list.list_search()함수를 try-catch.
+///모두 통과하면 해당 instance의 .delet_score()호출, student_list.list에 접근하여 해당 instance를 삭제
 func delete_score() {
     print("성적을 삭제할 학생의 이름, 과목 이름을 띄어쓰기로 구분하여 차례로 작성해주세요.")
     print("입력예) Mickey Swift")
@@ -224,9 +268,6 @@ func delete_score() {
                 throw TestError.NoneExist(name: name)
             }
             student.delete_score(subject: subject)
-            
-            let target_in = Student_list.list.indices.filter { Student_list.list[$0].name == student.name }
-            Student_list.list[target_in.first!] = student
             
             print("\(name) 학생의 \(subject) 과목의 성적이 삭제되었습니다.")
             
@@ -243,6 +284,9 @@ func delete_score() {
     }
 }
 
+///성적 평균을 보여주는 함수
+///
+///입력받은 이름으로 student_list.list_search()를 try-catch,  해당 인스턴스의 score를 모두 참조하여 해당 결과를 산출
 func show_GPA() {
     print("평점을 알고싶은 학생의 이름을 입력해주세요")
     if let student_name = readLine() {

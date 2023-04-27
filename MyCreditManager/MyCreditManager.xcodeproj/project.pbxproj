@@ -26,6 +26,7 @@
 		8804C98429F7EA0F00188EFB /* MyCreditManager */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MyCreditManager; sourceTree = BUILT_PRODUCTS_DIR; };
 		8804C98729F7EA0F00188EFB /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		8804C99029F872D600188EFB /* Dictionary_Problem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dictionary_Problem.swift; sourceTree = "<group>"; };
+		883A5B4329FAB6BC0058F627 /* sub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = sub.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +61,7 @@
 			children = (
 				8804C98729F7EA0F00188EFB /* main.swift */,
 				8804C99029F872D600188EFB /* Dictionary_Problem.swift */,
+				883A5B4329FAB6BC0058F627 /* sub.swift */,
 			);
 			path = MyCreditManager;
 			sourceTree = "<group>";
